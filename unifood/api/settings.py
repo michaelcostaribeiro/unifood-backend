@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['azulciano57.pythonanywhere.com', '127.0.0.1']
 
+CSRF_TRUSTED_ORIGINS = ['https://azulciano57.pythonanywhere.com']
+
 
 # Application definition
 
@@ -55,7 +57,6 @@ MIDDLEWARE = [
 ]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    'https://unifoodapp.netlify.app/',
 ]
 
 ROOT_URLCONF = 'api.urls'
