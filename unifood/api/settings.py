@@ -59,7 +59,7 @@ MIDDLEWARE = [
 ]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    'https://azulciano57.pythonanywhere.com',
+    'https://unifoodapp.netlify.app',
 ]
 
 ROOT_URLCONF = 'api.urls'
