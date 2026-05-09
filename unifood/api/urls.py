@@ -20,11 +20,13 @@ from . import views
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 urlpatterns = [
-    path('api/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('admin/', admin.site.urls),
     path('api/restaurants/', views.get_restaurants),
     path('api/types', views.get_food_types),
     path('api/restaurant/<int:id>',views.get_restaurant),
     path('api/foods/<int:id>',views.get_restaurant_foods),
+    path('api/register/', views.register),
+    path('api/user/', views.get_user_info, name='get_user_info')
 ]

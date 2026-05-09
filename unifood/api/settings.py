@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -27,6 +27,10 @@ SECRET_KEY = 'django-insecure-fea1ge!%dot74$wm&xp0t3w3xsg8$6_7#)^3*t8c1hdf)q6g#s
 DEBUG = True
 
 ALLOWED_HOSTS = ['azulciano57.pythonanywhere.com', '127.0.0.1']
+
+SIMPLE_JWT = {
+    'ROTATE_REFRESH_TOKENS' : True,
+}
 
 CSRF_TRUSTED_ORIGINS = ['https://azulciano57.pythonanywhere.com']
 
@@ -59,7 +63,7 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES' : {'rest_framework_simplejwt.authentication.JWTAuthentication'}
+    'DEFAULT_AUTHENTICATION_CLASSES' : ('rest_framework_simplejwt.authentication.JWTAuthentication',)
 }
 
 CORS_ALLOWED_ORIGINS = [
@@ -96,7 +100,12 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+SIMPLE_JWT = {
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=6),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=10),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

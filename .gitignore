@@ -1,18 +1,12 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
+.venv/
 *.py[cod]
 *$py.class
 
 # C extensions
 *.so
-
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-db.sqlite3
-.env
-.venv/
 
 # Distribution / packaging
 .Python
