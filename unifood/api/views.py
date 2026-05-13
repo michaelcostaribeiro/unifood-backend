@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
-from . import models
+from . import models, serializers
 from django.http import JsonResponse
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
@@ -54,12 +54,44 @@ def get_user_info(request):
     serializer = UserSerializer(user)
     return Response(serializer.data)
 
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def favorites(request):
+    if request.method == 'GET':
+        favorite_items = Favorite.objects.filter(user=request.user)
+        restaurant_ids = []
+        for i in favorite_items:
+            restaurant_ids.append(i.restaurant_id)
+        favorite_restaurants = Restaurant.objects.filter(pk__in=restaurant_ids)
+        serializer = RestaurantsSerializer(favorite_restaurants, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        restaurant_id = request.data['restaurant']
+        user = request.user
+
+        favorite_exists = Favorite.objects.filter(user=user, restaurant=restaurant_id)
+
+        if favorite_exists.exists():
+            favorite_exists.delete()
+            return Response({'status': 'removed'}, status=status.HTTP_200_OK)
+        else:
+            serializer = serializers.FavoriteSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=user)
+                return Response({'status': 'created'}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def favorite(request, id):
+    data = Favorite.objects.filter(user=request.user, restaurant=id)
+    serializer = serializers.FavoriteSerializer(data, many=True)
+    if serializer:
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # Endpoint restful para pedidos
 # @api_view(['GET', 'POST', 'PATCH'])
 # def pedidos(request):
 #     pass
 
-# Endpoint restful para favoritos
-# @api_view(['GET', 'POST'])
-# def pedidos(request):
-#     pass
+

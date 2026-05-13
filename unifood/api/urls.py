@@ -28,5 +28,7 @@ urlpatterns = [
     path('api/restaurant/<int:id>',views.get_restaurant),
     path('api/foods/<int:id>',views.get_restaurant_foods),
     path('api/register/', views.register),
-    path('api/user/', views.get_user_info, name='get_user_info')
+    path('api/user/', views.get_user_info, name='get_user_info'),
+    path('api/favorites/', views.favorites, name='favorites'),
+    path('api/favorite/<int:id>', views.favorite, name='favorite'),
 ]

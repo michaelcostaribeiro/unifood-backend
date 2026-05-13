@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.conf import settings
 
 class FoodType(models.Model):
     type_name = models.CharField(max_length=100)
@@ -15,6 +16,8 @@ class Restaurant(models.Model):
     min_order = models.DecimalField(max_digits=6, decimal_places=2)
     avg_min_time = models.IntegerField()
     avg_max_time = models.IntegerField()
+
+    users_who_favorite = models.ManyToManyField(settings.AUTH_USER_MODEL,through='Favorite')
 
     def clean(self):
         super().clean()
@@ -35,3 +38,11 @@ class Food(models.Model):
     food_types = models.ManyToManyField(FoodType)
     def __str__(self):
         return f'{self.name} ({self.restaurant.name})'
+
+class Favorite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'restaurant')
