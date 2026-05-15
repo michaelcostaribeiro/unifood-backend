@@ -31,4 +31,6 @@ urlpatterns = [
     path('api/user/', views.get_user_info, name='get_user_info'),
     path('api/favorites/', views.favorites, name='favorites'),
     path('api/favorite/<int:id>', views.favorite, name='favorite'),
+    path('api/cartItem/', views.cart_item, name='cart_item'),
+    path('api/cartItems/', views.cart_items, name='cart_items'),
 ]

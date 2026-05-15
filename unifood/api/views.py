@@ -88,10 +88,30 @@ def favorite(request, id):
     if serializer:
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def cart_item(request):
+    cart, created = models.Cart.objects.get_or_create(user=request.user)
 
-# Endpoint restful para pedidos
-# @api_view(['GET', 'POST', 'PATCH'])
-# def pedidos(request):
-#     pass
+    if request.method == 'POST':
+        models.CartItem.objects.get_or_create(cart=cart, food=request.data['food'], quantity=request.data['quantity'])
+        return Response({'status':'item adicionado'}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def cart_items(request):
+    user_cart = Cart.objects.get(user=request.user)
+    quantities = CartItem.objects.filter(cart=user_cart)
+    serializer = serializers.CartItemsSerializer(quantities, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # if request.method == 'GET':
+    #     favorite_items = Favorite.objects.filter(user=request.user)
+    #     restaurant_ids = []
+    #     for i in favorite_items:
+    #         restaurant_ids.append(i.restaurant_id)
+    #     favorite_restaurants = Restaurant.objects.filter(pk__in=restaurant_ids)
+    #     serializer = RestaurantsSerializer(favorite_restaurants, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

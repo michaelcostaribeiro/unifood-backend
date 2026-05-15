@@ -34,6 +34,7 @@ SIMPLE_JWT = {
 
 CSRF_TRUSTED_ORIGINS = ['https://azulciano57.pythonanywhere.com']
 
+AUTH_USER_MODEL = 'api.UserWithEmail'
 
 # Application definition
 
