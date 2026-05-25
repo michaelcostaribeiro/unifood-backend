@@ -127,7 +127,7 @@ def cart_item(request):
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def cart_items(request):
-    user_cart = Cart.objects.get(user=request.user)
+    user_cart, created = Cart.objects.get_or_create(user=request.user)
     quantities = CartItem.objects.filter(cart=user_cart)
     serializer = serializers.CartItemsSerializer(quantities, many=True)
     foods_and_quantity = []
