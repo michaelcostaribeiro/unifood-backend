@@ -3,6 +3,25 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+
+class State(models.Model):
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+
+class City(models.Model):
+    name = models.CharField(max_length=100)
+    state = models.ForeignKey(State, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.name} de {self.state.name}'
+
+class College(models.Model):
+    name = models.CharField(max_length=100)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.name} de {self.city.name}'
+
+
 class FoodType(models.Model):
     type_name = models.CharField(max_length=100)
     type_icon = models.CharField(max_length=15)
@@ -13,12 +32,14 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=100)
     score = models.DecimalField(max_digits=5, decimal_places=1)
     background_image_url = models.URLField()
-    food_types = models.OneToOneField('FoodType',on_delete=models.SET_NULL,null=True,related_name='restaurant_food_type')
+    food_types = models.ForeignKey('FoodType',on_delete=models.SET_NULL,null=True,related_name='restaurants')
     min_order = models.DecimalField(max_digits=6, decimal_places=2)
     avg_min_time = models.IntegerField()
     avg_max_time = models.IntegerField()
 
     users_who_favorite = models.ManyToManyField(settings.AUTH_USER_MODEL,through='Favorite')
+
+    college = models.ForeignKey(College,on_delete=models.SET_NULL,null=True,related_name='restaurant_college')
 
     def clean(self):
         super().clean()
@@ -36,7 +57,8 @@ class Food(models.Model):
     description = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='foods')
-    food_types = models.ManyToManyField(FoodType)
+    img_url = models.URLField()
+    food_types = models.ForeignKey('FoodType', on_delete=models.SET_NULL,null=True,related_name='food_types')
     def __str__(self):
         return f'{self.name} ({self.restaurant.name})'
 
@@ -104,3 +126,23 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f'{self.quantity} x {self.food.name} for {self.cart.user.email}'
+
+class Order(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    order_number = models.IntegerField(null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    finished = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, default="Recebido")
+    def __str__(self):
+        return f'Pedido {self.order_number} de: {self.user.email}'
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    price_at_purchase = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return f'{self.quantity}x {self.food.name} no Pedido #{self.order.order_number}'
+
